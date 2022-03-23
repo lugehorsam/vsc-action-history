@@ -7,6 +7,7 @@
 	"engines": {
 		"vscode": "^1.65.0"
 	},
+
 	"categories": [
 		"Other"
 	],
@@ -18,9 +19,18 @@
 		"commands": [
 			{
 				"command": "action-history.show-history-panel",
-				"title": "Show Action History Panel"
+                "category": "Action History",
+				"title": "Show History"
 			}
-		]
+		],
+        "keybindings": [
+            {
+              "command": "extension.show-history-panel",
+              "key": "ctrl+h",
+              "mac": "cmd+h",
+              "when": "editorFocus"
+            }
+        ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
