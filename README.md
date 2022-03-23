@@ -18,3 +18,5 @@ Contributions are encouraged. Please consult the VS Code documentation for gener
 # Roadmap
 - [ ] Investigate whether or not hte default keybinding for *Activity Panel: Show Panel* could overwrite or "shadow" a previously set user keybinding.
 - [ ] Make extension logo retrievable via HTTPS repository.
+- [ ] Track history across multiple devices.
+- [ ] Add user-defined filters (action name, type) for searching through history.
