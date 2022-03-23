@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:action-history.helloWorld"
+		"onCommand:action-history.show-history-panel"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "action-history.helloWorld",
-				"title": "Hello World"
+				"command": "action-history.show-history-panel",
+				"title": "Show Action History Panel"
 			}
 		]
 	},
