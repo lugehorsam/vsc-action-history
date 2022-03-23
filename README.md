@@ -9,3 +9,8 @@ It is helpful for two aspects of an engineer's workflow:
 - Git 2.32.0
 - Built with NodeJS 6.14.7
 - Run `npm install` prior to the first build.
+
+
+# Developing and Contributing
+
+Contributions are encouraged. Please consult the VS Code documentation for general information on their extension API: https://code.visualstudio.com/api/extension-guides/overview
