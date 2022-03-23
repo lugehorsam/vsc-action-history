@@ -2,7 +2,7 @@
     "name": "action-history",
     "displayName": "Action History",
     "description": "View actions you've taken in VS Code.",
-    "icon": "images/logo.png",
+    "icon": "images/logo-256.png",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.65.0"
@@ -35,7 +35,7 @@
                 {
                     "id": "action-history-panel",
                     "title": "Action History",
-                    "icon": "images/logo.png"
+                    "icon": "images/logo-64.png"
                 }
             ]
         },
