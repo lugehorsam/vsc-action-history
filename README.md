@@ -17,8 +17,12 @@ Contributions are encouraged. Please consult the VS Code documentation for gener
 - Built with NodeJS 6.14.7
 - Run `npm install` prior to the first build.
 
-# Roadmap
-- [ ] Investigate whether or not hte default keybinding for *Activity Panel: Show Panel* could overwrite or "shadow" a previously set user keybinding.
+# Tentative Roadmap
+- [ ] Persist workspace history to disk.
+- [ ] Ability to clear history.
+- [ ] Add user-defined filters (action name, type) for searching through history.
+- [ ] Investigate whether or not the default keybinding for *Activity Panel: Show Panel* could overwrite or "shadow" a previously set user keybinding.
 - [ ] Make extension logo retrievable via HTTPS repository.
 - [ ] Track history across multiple devices.
-- [ ] Add user-defined filters (action name, type) for searching through history.
+- [ ] Track history outside of workspaces.
+- [ ] When user undos an action, show "pending redos" rather than wiping latest action from history upon undo.

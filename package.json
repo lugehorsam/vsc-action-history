@@ -11,25 +11,10 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:action-history.show-history-panel"
+        "*"
     ],
     "main": "./out/extension.js",
     "contributes": {
-        "commands": [
-            {
-                "command": "action-history.show-history-panel",
-                "category": "Action History",
-                "title": "Show History"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "extension.show-history-panel",
-                "key": "ctrl+h",
-                "mac": "cmd+h",
-                "when": "editorFocus"
-            }
-        ],
         "viewsContainers": {
             "activitybar": [
                 {
@@ -68,5 +53,8 @@
         "mocha": "^9.2.1",
         "typescript": "^4.5.5",
         "@vscode/test-electron": "^2.1.2"
+    },
+    "dependencies": {
+        "circularbuffer": "^0.1.1"
     }
 }
