@@ -1,7 +1,7 @@
 # Overview
-Action History is a VS Code plugin that displays the actions an engineer has taken within their workspace.
+Action History is a VS Code plugin that displays the actions an engineer has taken within their workspace within a single seession.
 
-It is intended to help engineers context switch more effectively. If an engineer is interrupted and returns to their work, this extensions helps them pick up where they left off.
+It is intended to help engineers context switch more effectively. If an engineer is interrupted and returns to their work, this extensions helps them remember what they were doing.
 
 # Usage
 This extension adds an extra button to the activity bar that the user can click on to open the history panel. In the history panel, the user can view the list of actions they've taken.
