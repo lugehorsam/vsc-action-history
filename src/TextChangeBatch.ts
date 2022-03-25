@@ -3,20 +3,27 @@ import * as vscode from 'vscode';
 export class TextChangeBatch {
 
     private changeEvents : vscode.TextDocumentChangeEvent[] = []
+    private document? : vscode.TextDocument;
 
-    constructor(private readonly document : vscode.TextDocument) {
-        if (!document) {
-            throw "Invalid document passed to text change batch.";
+    belongsToDocument(document : vscode.TextDocument) : boolean {
+        if (!this.document) {
+            return false;
         }
-    }
 
-    isBatchDocument(document : vscode.TextDocument) : boolean {
         return document.uri == this.document.uri
     }
 
+    hasDocument() : boolean {
+        return this.document != null && this.document != undefined;
+    }
+
     getBatch() : vscode.TextDocumentChangeEvent {
+        if (!this.hasDocument()) {
+            throw "Tried to obtain batched changes from a batch with no document.";
+        }
+
         let batchedEvent : vscode.TextDocumentChangeEvent = {
-            document: this.document,
+            document: this.document!,
             contentChanges: this.changeEvents.flatMap(evt => evt.contentChanges),
             reason: undefined
         };
@@ -25,7 +32,9 @@ export class TextChangeBatch {
     }
 
     batch(e : vscode.TextDocumentChangeEvent) {
-        if (!this.isBatchDocument(e.document)) {
+        if (!this.hasDocument()) {
+            this.document = e.document;
+        } else if (!this.belongsToDocument(e.document)) {
             throw "Tried to batch text changes to a mismatched document.";
         }
 

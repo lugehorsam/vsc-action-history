@@ -30,7 +30,7 @@ const createFilesLabel = "Create File";
 const deleteFilesLabel = "Delete File";
 const renameFilesLabel = "Rename File";
 
-let currentBatch : TextChangeBatch = new TextChangeBatch();
+const textChangeBatch : TextChangeBatch = new TextChangeBatch();
 
 // this method is called when the extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -65,14 +65,21 @@ export function deactivate() {
 }
 
 function handleDidChangeTextDocument(e : vscode.TextDocumentChangeEvent) {
-    currentBatch.batch(e);
-    let description = `"${e.contentChanges}"`;
-    let historyItem = new HistoryData(changeTextLabel, description);
-    historyBuffer.enq(historyItem);
-    historyItemProvider.refresh();
+    if (!textChangeBatch.hasDocument() || textChangeBatch.belongsToDocument(e.document)) {
+        // batch the change, thus assigning a document to the batch if
+        // it does not yet have one.
+        textChangeBatch.batch(e);
+    } else {
+        // write the current batch to the history buffer and then start a new batch
+        flushBatchChanges(textChangeBatch, historyBuffer);
+        historyItemProvider.refresh();
+        textChangeBatch.batch(e);
+    }
 }
 
 function handleDidCloseTextDocument(e : vscode.TextDocument) {
+    flushBatchChanges(textChangeBatch, historyBuffer);
+
     let description = `"${e.fileName}"`;
     let historyItem = new HistoryData(closeTextLabel, description);
     historyBuffer.enq(historyItem);
@@ -80,6 +87,8 @@ function handleDidCloseTextDocument(e : vscode.TextDocument) {
 }
 
 function handleDidOpenTextDocument(e : vscode.TextDocument) {
+    flushBatchChanges(textChangeBatch, historyBuffer);
+
     let description = `"${e.fileName}"`;
     let historyItem = new HistoryData(openTextLabel, description);
     historyBuffer.enq(historyItem);
@@ -87,6 +96,8 @@ function handleDidOpenTextDocument(e : vscode.TextDocument) {
 }
 
 function handleDidSaveTextDocument(e : vscode.TextDocument) {
+    flushBatchChanges(textChangeBatch, historyBuffer);
+
     let description = `"${e.fileName}"`;
     let historyItem = new HistoryData(saveTextLabel, description);
     historyBuffer.enq(historyItem);
@@ -97,6 +108,8 @@ function handleDidCreateFiles(e : vscode.FileCreateEvent) {
     if (e.files.length <= 0 || !e.files[0]) {
         return;
     }
+
+    flushBatchChanges(textChangeBatch, historyBuffer);
 
     let description = `"${e.files[0].fragment}"`;
     let historyItem = new HistoryData(createFilesLabel, description);
@@ -109,6 +122,8 @@ function handleDidDeleteFiles(e : vscode.FileDeleteEvent) {
         return;
     }
 
+    flushBatchChanges(textChangeBatch, historyBuffer);
+
     let description = `"${e.files[0].fragment}"`;
     let historyItem = new HistoryData(deleteFilesLabel, description);
     historyBuffer.enq(historyItem);
@@ -120,8 +135,20 @@ function handleDidRenameFiles(e : vscode.FileRenameEvent) {
         return;
     }
 
+    flushBatchChanges(textChangeBatch, historyBuffer);
+
     let description = `"${e.files[0].oldUri}" -> "${e.files[0].newUri}"`;
     let historyItem = new HistoryData(renameFilesLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
+}
+
+function getBatchedChangeHistory(batch : TextChangeBatch) : HistoryData {
+    return new HistoryData(changeTextLabel, batch.getBatch().contentChanges.join());
+}
+
+// flush the current text change batch into the history buffer.
+function flushBatchChanges(batch: TextChangeBatch, historyBuffer : CircularBuffer<HistoryData>) {
+    let historyData = getBatchedChangeHistory(batch);
+    historyBuffer.enq(historyData);
 }
