@@ -14,6 +14,8 @@ Contributions are encouraged. Please consult the VS Code documentation for gener
 - Built with NodeJS 6.14.7
 - Run `npm install` prior to the first build.
 
+To package the extension, run `vsce package` from the repository root.
+
 # Tentative Roadmap
 - [ ] Investigate why certain workspace events are not firing.
 - [ ] Improve label legibility.
