@@ -16,7 +16,9 @@ export class HistoryItemProvider implements vscode.TreeDataProvider<HistoryData>
 	}
 
     getTreeItem(item: HistoryData): vscode.TreeItem {
-        return new vscode.TreeItem(item.label);
+        var treeItem = new vscode.TreeItem(item.label);
+        treeItem.description = item.details;
+        return treeItem;
     }
 
     getChildren(item?: HistoryData): Thenable<HistoryData[]> {
