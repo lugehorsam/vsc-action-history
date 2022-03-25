@@ -15,6 +15,7 @@ Contributions are encouraged. Please consult the VS Code documentation for gener
 - Run `npm install` prior to the first build.
 
 # Tentative Roadmap
+- [ ] Investigate why certain workspace events are not firing.
 - [ ] Improve label legibility.
 - [ ] Add text deletion support.
 - [ ] Add a test suite.
