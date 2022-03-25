@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import CircularBuffer from "circularbuffer";
 
 export class HistoryData {
-    constructor(readonly label : string, readonly details : string) {}
+    constructor(readonly label : string, readonly description : string) {}
 }
 
 export class HistoryItemProvider implements vscode.TreeDataProvider<HistoryData> {
@@ -17,7 +17,7 @@ export class HistoryItemProvider implements vscode.TreeDataProvider<HistoryData>
 
     getTreeItem(item: HistoryData): vscode.TreeItem {
         var treeItem = new vscode.TreeItem(item.label);
-        treeItem.description = item.details;
+        treeItem.description = item.description;
         return treeItem;
     }
 
