@@ -3,31 +3,34 @@
 import * as vscode from 'vscode';
 import CircularBuffer from "circularbuffer";
 import {HistoryData, HistoryItemProvider} from "./HistoryItemProvider"
+import { TextChangeBatch } from './TextChangeBatch';
 
 const historyBufferSize = 100;
 
-var historyBuffer = new CircularBuffer<HistoryData>(historyBufferSize);
-var historyItemProvider = new HistoryItemProvider(historyBuffer);
+let historyBuffer = new CircularBuffer<HistoryData>(historyBufferSize);
+let historyItemProvider = new HistoryItemProvider(historyBuffer);
 
-var treeDataDisposable : vscode.Disposable;
+let treeDataDisposable : vscode.Disposable;
 
-var changeTextDisposable : vscode.Disposable;
-var closeTextDisposable : vscode.Disposable;
-var openTextDispoable : vscode.Disposable;
-var saveTextDisposable : vscode.Disposable;
+let changeTextDisposable : vscode.Disposable;
+let closeTextDisposable : vscode.Disposable;
+let openTextDispoable : vscode.Disposable;
+let saveTextDisposable : vscode.Disposable;
 
-var createFilesDisposable : vscode.Disposable;
-var deleteFilesDisposable : vscode.Disposable;
-var renameFilesDisposable : vscode.Disposable;
+let createFilesDisposable : vscode.Disposable;
+let deleteFilesDisposable : vscode.Disposable;
+let renameFilesDisposable : vscode.Disposable;
 
-var changeTextLabel : string = "Change Document";
-var closeTextLabel : string = "Close Document";
-var openTextLabel : string = "Open Document";
-var saveTextLabel : string = "Save Document";
+const changeTextLabel = "Change Document";
+const closeTextLabel = "Close Document";
+const openTextLabel = "Open Document";
+const saveTextLabel = "Save Document";
 
-var createFilesLabel : string = "Create File";
-var deleteFilesLabel : string = "Delete File";
-var renameFilesLabel : string = "Rename File";
+const createFilesLabel = "Create File";
+const deleteFilesLabel = "Delete File";
+const renameFilesLabel = "Rename File";
+
+let currentBatch : TextChangeBatch = new TextChangeBatch();
 
 // this method is called when the extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -62,29 +65,30 @@ export function deactivate() {
 }
 
 function handleDidChangeTextDocument(e : vscode.TextDocumentChangeEvent) {
-    var description = `TODO`;
-    var historyItem = new HistoryData(changeTextLabel, description);
+    currentBatch.batch(e);
+    let description = `"${e.contentChanges}"`;
+    let historyItem = new HistoryData(changeTextLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidCloseTextDocument(e : vscode.TextDocument) {
-    var description = `"${e.fileName}"`;
-    var historyItem = new HistoryData(closeTextLabel, description);
+    let description = `"${e.fileName}"`;
+    let historyItem = new HistoryData(closeTextLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidOpenTextDocument(e : vscode.TextDocument) {
-    var description = `"${e.fileName}"`;
-    var historyItem = new HistoryData(openTextLabel, description);
+    let description = `"${e.fileName}"`;
+    let historyItem = new HistoryData(openTextLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidSaveTextDocument(e : vscode.TextDocument) {
-    var description = `"${e.fileName}"`;
-    var historyItem = new HistoryData(saveTextLabel, description);
+    let description = `"${e.fileName}"`;
+    let historyItem = new HistoryData(saveTextLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
@@ -94,8 +98,8 @@ function handleDidCreateFiles(e : vscode.FileCreateEvent) {
         return;
     }
 
-    var description = `"${e.files[0].fragment}"`;
-    var historyItem = new HistoryData(createFilesLabel, description);
+    let description = `"${e.files[0].fragment}"`;
+    let historyItem = new HistoryData(createFilesLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
@@ -105,8 +109,8 @@ function handleDidDeleteFiles(e : vscode.FileDeleteEvent) {
         return;
     }
 
-    var description = `"${e.files[0].fragment}"`;
-    var historyItem = new HistoryData(deleteFilesLabel, description);
+    let description = `"${e.files[0].fragment}"`;
+    let historyItem = new HistoryData(deleteFilesLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
@@ -116,8 +120,8 @@ function handleDidRenameFiles(e : vscode.FileRenameEvent) {
         return;
     }
 
-    var description = `"${e.files[0].oldUri}" -> "${e.files[0].newUri}"`;
-    var historyItem = new HistoryData(renameFilesLabel, description);
+    let description = `"${e.files[0].oldUri}" -> "${e.files[0].newUri}"`;
+    let historyItem = new HistoryData(renameFilesLabel, description);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
