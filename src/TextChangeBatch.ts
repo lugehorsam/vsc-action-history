@@ -6,15 +6,15 @@ export class TextChangeBatch {
     private document? : vscode.TextDocument;
 
     belongsToDocument(document : vscode.TextDocument) : boolean {
-        if (!this.document) {
+        if (!this.hasDocument()) {
             return false;
         }
 
-        return document.uri == this.document.uri
+        return document.uri == this.document!.uri
     }
 
     hasDocument() : boolean {
-        return this.document != null && this.document != undefined;
+        return this.document != undefined;
     }
 
     getBatch() : vscode.TextDocumentChangeEvent {
@@ -39,5 +39,10 @@ export class TextChangeBatch {
         }
 
         this.changeEvents.push(e);
+    }
+
+    flush() {
+        this.document = undefined;
+        this.changeEvents = [];
     }
 }

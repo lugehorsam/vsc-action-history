@@ -144,11 +144,13 @@ function handleDidRenameFiles(e : vscode.FileRenameEvent) {
 }
 
 function getBatchedChangeHistory(batch : TextChangeBatch) : HistoryData {
-    return new HistoryData(changeTextLabel, batch.getBatch().contentChanges.join());
+    let batchedText : string = batch.getBatch().contentChanges.map(change => change.text).join("");
+    return new HistoryData(changeTextLabel, `"${batchedText}"`);
 }
 
 // flush the current text change batch into the history buffer.
 function flushBatchChanges(batch: TextChangeBatch, historyBuffer : CircularBuffer<HistoryData>) {
     let historyData = getBatchedChangeHistory(batch);
+    batch.flush();
     historyBuffer.enq(historyData);
 }

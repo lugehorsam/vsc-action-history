@@ -17,6 +17,7 @@ Contributions are encouraged. Please consult the VS Code documentation for gener
 - Run `npm install` prior to the first build.
 
 # Tentative Roadmap
+- [ ] Improve label legibility.
 - [ ] Add a test suite.
 - [ ] Persist workspace history to disk.
 - [ ] Ability to clear history.
