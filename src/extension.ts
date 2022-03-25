@@ -39,6 +39,8 @@ export function activate(context: vscode.ExtensionContext) {
         "action-history-list",
         historyItemProvider);
 
+    textChangeBatch.onBatchTimerComplete = handleBatchTimerComplete;
+
     changeTextDisposable = vscode.workspace.onDidChangeTextDocument(handleDidChangeTextDocument);
     closeTextDisposable = vscode.workspace.onDidCloseTextDocument(handleDidCloseTextDocument);
     openTextDispoable = vscode.workspace.onDidOpenTextDocument(handleDidOpenTextDocument);
@@ -47,10 +49,14 @@ export function activate(context: vscode.ExtensionContext) {
     createFilesDisposable = vscode.workspace.onDidCreateFiles(handleDidCreateFiles);
     deleteFilesDisposable = vscode.workspace.onDidDeleteFiles(handleDidDeleteFiles);
     renameFilesDisposable = vscode.workspace.onDidRenameFiles(handleDidRenameFiles);
+
 }
 
 // this method is called when the extension is deactivated
 export function deactivate() {
+
+    flushBatchChanges(textChangeBatch, historyBuffer);
+
     changeTextDisposable?.dispose();
     closeTextDisposable?.dispose();
     openTextDispoable?.dispose();
@@ -60,8 +66,11 @@ export function deactivate() {
     deleteFilesDisposable?.dispose();
     renameFilesDisposable?.dispose();
 
+    textChangeBatch.onBatchTimerComplete = undefined;
+
     // dispose tree after event handlers
     treeDataDisposable?.dispose();
+
 }
 
 function handleDidChangeTextDocument(e : vscode.TextDocumentChangeEvent) {
@@ -153,4 +162,8 @@ function flushBatchChanges(batch: TextChangeBatch, historyBuffer : CircularBuffe
     let historyData = getBatchedChangeHistory(batch);
     batch.flush();
     historyBuffer.enq(historyData);
+}
+
+function handleBatchTimerComplete() {
+    flushBatchChanges(textChangeBatch, historyBuffer);
 }
