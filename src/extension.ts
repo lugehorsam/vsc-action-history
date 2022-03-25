@@ -29,8 +29,7 @@ var createFilesLabel : string = "Create File";
 var deleteFilesLabel : string = "Delete File";
 var renameFilesLabel : string = "Rename File";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+// this method is called when the extension is activated
 export function activate(context: vscode.ExtensionContext) {
     // register tree before event handlers
     treeDataDisposable = vscode.window.registerTreeDataProvider(
@@ -47,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
     renameFilesDisposable = vscode.workspace.onDidRenameFiles(handleDidRenameFiles);
 }
 
-// this method is called when your extension is deactivated
+// this method is called when the extension is deactivated
 export function deactivate() {
     changeTextDisposable?.dispose();
     closeTextDisposable?.dispose();
@@ -63,43 +62,62 @@ export function deactivate() {
 }
 
 function handleDidChangeTextDocument(e : vscode.TextDocumentChangeEvent) {
-    var historyItem = new HistoryData(changeTextLabel);
+    var details = `TODO`;
+    var historyItem = new HistoryData(changeTextLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidCloseTextDocument(e : vscode.TextDocument) {
-    var historyItem = new HistoryData(closeTextLabel);
+    var details = `"${e.fileName}"`;
+    var historyItem = new HistoryData(closeTextLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidOpenTextDocument(e : vscode.TextDocument) {
-    var historyItem = new HistoryData(openTextLabel);
+    var details = `"${e.fileName}"`;
+    var historyItem = new HistoryData(openTextLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidSaveTextDocument(e : vscode.TextDocument) {
-    var historyItem = new HistoryData(saveTextLabel);
+    var details = `"${e.fileName}"`;
+    var historyItem = new HistoryData(saveTextLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidCreateFiles(e : vscode.FileCreateEvent) {
-    var historyItem = new HistoryData(createFilesLabel);
+    if (e.files.length <= 0 || !e.files[0]) {
+        return;
+    }
+
+    var details = `"${e.files[0].fragment}"`;
+    var historyItem = new HistoryData(createFilesLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidDeleteFiles(e : vscode.FileDeleteEvent) {
-    var historyItem = new HistoryData(deleteFilesLabel);
+    if (e.files.length <= 0 || !e.files[0]) {
+        return;
+    }
+
+    var details = `"${e.files[0].fragment}"`;
+    var historyItem = new HistoryData(deleteFilesLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
 
 function handleDidRenameFiles(e : vscode.FileRenameEvent) {
-    var historyItem = new HistoryData(renameFilesLabel);
+    if (e.files.length <= 0 || !e.files[0]) {
+        return;
+    }
+
+    var details = `"${e.files[0].oldUri}" -> "${e.files[0].newUri}"`;
+    var historyItem = new HistoryData(renameFilesLabel, details);
     historyBuffer.enq(historyItem);
     historyItemProvider.refresh();
 }
