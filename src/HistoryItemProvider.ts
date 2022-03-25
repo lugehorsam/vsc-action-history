@@ -12,8 +12,8 @@ export class HistoryItemProvider implements vscode.TreeDataProvider<HistoryData>
     constructor(private readonly historyBuffer : CircularBuffer<HistoryData>) {}
 
     refresh(): void {
-		this._onDidChangeTreeData.fire();
-	}
+        this._onDidChangeTreeData.fire();
+    }
 
     getTreeItem(item: HistoryData): vscode.TreeItem {
         let treeItem = new vscode.TreeItem(item.label);
