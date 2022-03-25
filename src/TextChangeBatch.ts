@@ -2,8 +2,12 @@ import * as vscode from 'vscode';
 
 export class TextChangeBatch {
 
+    public onBatchTimerComplete?: () => void
+    public readonly BatchIntervalMs : number = 1000;
+
     private changeEvents : vscode.TextDocumentChangeEvent[] = []
     private document? : vscode.TextDocument;
+    private lastBatchIntervalId? : NodeJS.Timeout;
 
     belongsToDocument(document : vscode.TextDocument) : boolean {
         if (!this.hasDocument()) {
@@ -39,10 +43,22 @@ export class TextChangeBatch {
         }
 
         this.changeEvents.push(e);
+
+        if (this.lastBatchIntervalId) {
+            clearInterval(this.lastBatchIntervalId!);
+        }
+
+        this.lastBatchIntervalId = setInterval(() => this.onBatchTimerComplete?.(), this.BatchIntervalMs);
     }
 
     flush() {
         this.document = undefined;
         this.changeEvents = [];
+
+        if (this.lastBatchIntervalId) {
+            clearInterval(this.lastBatchIntervalId!);
+        }
+
+        this.lastBatchIntervalId = undefined;
     }
 }
