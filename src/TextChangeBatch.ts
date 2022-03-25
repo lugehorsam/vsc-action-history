@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 export class TextChangeBatch {
 
     public onBatchTimerComplete?: () => void
-    public readonly BatchIntervalMs : number = 1000;
+    public readonly batchIntervalMs : number = 1000;
 
     private changeEvents : vscode.TextDocumentChangeEvent[] = []
     private document? : vscode.TextDocument;
@@ -48,7 +48,7 @@ export class TextChangeBatch {
             clearInterval(this.lastBatchIntervalId!);
         }
 
-        this.lastBatchIntervalId = setInterval(() => this.onBatchTimerComplete?.(), this.BatchIntervalMs);
+        this.lastBatchIntervalId = setInterval(() => this.onBatchTimerComplete?.(), this.batchIntervalMs);
     }
 
     flush() {

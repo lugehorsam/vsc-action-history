@@ -16,6 +16,7 @@ Contributions are encouraged. Please consult the VS Code documentation for gener
 
 # Tentative Roadmap
 - [ ] Improve label legibility.
+- [ ] Add text deletion support.
 - [ ] Add a test suite.
 - [ ] Persist workspace history to disk.
 - [ ] Ability to clear history.

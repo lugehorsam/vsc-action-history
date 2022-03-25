@@ -49,13 +49,12 @@ export function activate(context: vscode.ExtensionContext) {
     createFilesDisposable = vscode.workspace.onDidCreateFiles(handleDidCreateFiles);
     deleteFilesDisposable = vscode.workspace.onDidDeleteFiles(handleDidDeleteFiles);
     renameFilesDisposable = vscode.workspace.onDidRenameFiles(handleDidRenameFiles);
-
 }
 
 // this method is called when the extension is deactivated
 export function deactivate() {
-
     flushBatchChanges(textChangeBatch, historyBuffer);
+    historyItemProvider.refresh();
 
     changeTextDisposable?.dispose();
     closeTextDisposable?.dispose();
@@ -70,7 +69,6 @@ export function deactivate() {
 
     // dispose tree after event handlers
     treeDataDisposable?.dispose();
-
 }
 
 function handleDidChangeTextDocument(e : vscode.TextDocumentChangeEvent) {
@@ -152,18 +150,29 @@ function handleDidRenameFiles(e : vscode.FileRenameEvent) {
     historyItemProvider.refresh();
 }
 
-function getBatchedChangeHistory(batch : TextChangeBatch) : HistoryData {
-    let batchedText : string = batch.getBatch().contentChanges.map(change => change.text).join("");
+function getBatchedChangeHistory(batch : TextChangeBatch) : HistoryData | undefined {
+    // concat all content changes and trim for legibility
+    let batchedText : string = batch.getBatch().contentChanges.map(change => change.text).join("").trim();
+    // TODO if an empty string, it's probably a deletion which we don't support yet
+    if (batchedText == "") {
+        return undefined;
+    }
+
     return new HistoryData(changeTextLabel, `"${batchedText}"`);
 }
 
 // flush the current text change batch into the history buffer.
 function flushBatchChanges(batch: TextChangeBatch, historyBuffer : CircularBuffer<HistoryData>) {
     let historyData = getBatchedChangeHistory(batch);
+
     batch.flush();
-    historyBuffer.enq(historyData);
+
+    if (historyData) {
+        historyBuffer.enq(historyData);
+    }
 }
 
 function handleBatchTimerComplete() {
     flushBatchChanges(textChangeBatch, historyBuffer);
+    historyItemProvider.refresh();
 }
